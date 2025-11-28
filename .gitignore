@@ -5,4 +5,11 @@
 
 *.nc
 *.tif
-*.RData
+ICAR_dispersal_model/output/Womblemodel_tactical_icar.RData
+ICAR_dispersal_model/output/Womblemodel_tactical_icar_clustering.RData
+ICAR_dispersal_model/output/Womblemodel_tactical_icar_sitenumber.RData
+ICAR_dispersal_model/output/Womblemodel_tactical_phasemodel.RData
+ICAR_dispersal_model/output/Womblemodel_tactical_withoutplat_errors.RData
+ICAR_dispersal_model/output/Womblemodel_tactical_withplat_errors.RData
+ICAR_dispersal_model/output/Womblemodel_tactical_withplat_noerrors.RData
+ICAR_dispersal_model/output/Womblemodel_tactical_woa_noerrors.RData
