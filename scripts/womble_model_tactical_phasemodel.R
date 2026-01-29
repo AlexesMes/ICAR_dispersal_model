@@ -28,7 +28,7 @@ sim_dataset <- sim_data(with_calibration = TRUE,
                         n_dates = 3*800,
                         beta1=-500, 
                         beta2=0, 
-                        x1_areas=c(1,2,6,10,11,15,19,20,24), 
+                        x1_areas=c(1,2,6,10,11,15,19,20,24,25,29,38), 
                         x2_areas=0,
                         a_min=0,
                         a_max=3000,
@@ -172,9 +172,9 @@ modelW <- function(seed, d, theta_init, alpha_init, delta_init, init_a, init_b, 
     
     #For Each Region
     for (k in 1:n_areas){
-      a[k] ~ dunif(50, 5000); #a[k] ~ dunif(50, 4000);
-      b[k] ~ dunif(50, 5000); #b[k] ~ dunif(50, 2300)
-      constraint_uniform[k] ~ dconstraint(b[k]<a[k]); #In each area, start date of occupation, a_k, must be greater than the end date of occupation, b_k (note: BP dates in the positive direction)
+      a[k] ~ dunif(50, 3000);
+      b[k] ~ dunif(50, 3000);
+      constraint_uniform[k] ~ dconstraint(a[k]>b[k]); #In each area, start date of occupation, a_k, must be greater than the end date of occupation, b_k (note: BP dates in the positive direction)
     }
     
     #For Each Boundary
@@ -182,9 +182,6 @@ modelW <- function(seed, d, theta_init, alpha_init, delta_init, init_a, init_b, 
       #nabla defines the difference in arrival time across a boundary
       nabla[t] <- abs(a[edge_id1[t]] - a[edge_id2[t]]) #edge t: select first area, m, and second area, n
     }
-    
-    #Priors
-    tau1 ~ dgamma(0.8, 0.1);  #weak prior for ICAR model -- spatial autocorrelation precision parameter
     
     # Hyperprior for duration
     gamma1 ~ dunif(1,20); #Hyperprior for rate
@@ -198,16 +195,18 @@ modelW <- function(seed, d, theta_init, alpha_init, delta_init, init_a, init_b, 
                 alpha=alpha_init,
                 delta=delta_init,
                 theta=d$cra, #theta_init
-                tau1=rgamma(1, shape = 0.8, rate = 0.1),
                 gamma1=10,
                 gamma2=200)
   
-  
   # Compile and Run model	----
+  #Create model object
   model <- nimbleModel(model, constants=constants, data=d, inits=inits)
   cModel <- compileNimble(model)
-  conf <- configureMCMC(model, control=list(adaptInterval=20000, adaptFactorExponent=0.1))
-  conf$addMonitors(c('a','b','nabla','theta','delta','alpha'))
+  #Configure MCMC with conjugacy where possible
+  conf <- configureMCMC(model, useConjugacy = TRUE, control = list(adaptInterval=5000, adaptFactorExponent=0.1))
+  #Add monitors
+  conf$addMonitors(c('a','b','theta','delta','alpha','nabla'))
+  #Build, compile, and run MCMC
   MCMC <- buildMCMC(conf)
   cMCMC <- compileNimble(MCMC)
   results <- runMCMC(cMCMC, niter = niter, thin = thin, nburnin = nburnin, samplesAsCodaMCMC = T, setSeed = seed) 

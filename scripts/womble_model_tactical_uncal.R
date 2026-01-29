@@ -10,7 +10,7 @@ library(spdep)
 rm(list = ls())
 `%!in%` <- Negate(`%in%`)
 
-set.seed(123)
+set.seed(1230)
 
 ##ICAR model with uncalibrated/calendar dates
 
@@ -35,26 +35,6 @@ sim_dataset <- sim_data(with_calibration = FALSE,
 # Save output
 save(sim_dataset, file=here('data','tactical_sim_woa_noerror.RData'))
 
-
-##UNCOMMENT
-# #For In Plateau with calendar dates Simulation 
-# #Generate simulated data set
-# sim_dataset <- sim_data(with_calibration = FALSE,
-#                         seed=10,
-#                         structure="CAR",
-#                         k = 0.3,
-#                         n_sites = 800,
-#                         n_dates = 3*800,
-#                         beta1=-400,
-#                         beta2=300,
-#                         x1_areas=c(22,26,31,48,52,57,61,65,70),
-#                         x2_areas=c(10,19,25,26,67),
-#                         a_min=1000,
-#                         a_max=4000,
-#                         mu1=2500)
-# # Save output
-# save(sim_dataset, file=here('data','tactical_sim_icar_withinplat_noerror.RData'))
-
 #-------------------------------------------------------------------------------
 #Extract values
 sites <- sim_dataset$sites
@@ -65,8 +45,31 @@ constants <- sim_dataset$constants
 sampling_win_proj <- sim_dataset$sampling_win_proj
 hex_area_win_proj <-sim_dataset$hex_area_win_proj
 
+#b_k prior
+b_min <- 2500
+b_max <- 6500
+
 #Combine constants
-constants <- c(constants, constants_trig)
+constants <- c(constants, constants_trig, b_min=b_min, b_max=b_max)
+
+#-------------
+# #CHECK: Plot simulated arrival times
+# library(ggplot2)
+# library(viridis)
+# true_hex_dates <- hex_area_win_proj %>%
+#   filter(area_ID %in% 1:constants$n_areas) %>%
+#   mutate(true_a = constants$true_a)
+# 
+# ggplot(data = true_hex_dates) +
+#   geom_sf(data = sampling_win_proj, color = "grey50") +  # sampling window border
+#   geom_sf(aes(fill = true_a)) +
+#   scale_fill_viridis_c(option="F", direction=-1) +
+#   scale_alpha_manual(values=c(0.45, 1)) +
+#   xlab('Longitude') +
+#   ylab('Latitude') +
+#   geom_sf_label(aes(label = paste0(round(true_a), "BP")), label.size  = NA, alpha = 0.4, size=3.5) +
+#   theme(panel.background = element_rect(fill = "lightblue",colour = "lightblue",size = 0.5,linetype = "solid"),
+#         legend.position = "none")
 
 #-------------------------------------------------------------------------------
 ##Simulated data summary
@@ -121,7 +124,7 @@ init_a  <- init_a[ ,2] + buffer
 init_b  <- init_b[ ,2] - buffer
 
 # Initialise spatial residues
-init_phi <- init_a #or try: init_a*1.5
+init_phi <- init_a
 
 #-------------------------------------------------------------------------------
 #Spatial data ----
@@ -133,7 +136,12 @@ nb_areas <- poly2nb(as(hex_area_win_proj, 'Spatial'), queen=FALSE, row.names = h
 nbInfo <- nb2WB(nb_areas) #transform into iCAR inputs: adjacent matrix, weights, number of neighbors (for WinBUGS)
 
 #-------------------------------------------------------------------------------
-#Constants ----
+##General Setup ----
+#Data
+dat <- list(theta=sim_df$cra, 
+            constraint_uniform = rep(1, constants$n_areas))
+
+#Constants
 constants$adj <- nbInfo$adj
 constants$weights <- nbInfo$weights
 constants$num <- nbInfo$num
@@ -154,70 +162,93 @@ constants <- constants[names(constants) %!in% c("dist_mat",
 # #-------------------------------------------------------------------------------
 ## Model W: ICAR and wombling integrating sample interdependence, i.e. the addition of a hierarchical model ----
 
-modelW <- nimbleCode({
-  #For Each Site
-  for (j in 1:n_sites)
-  {
-    delta[j] ~ dgamma(gamma1, (gamma1-1)/gamma2)
-    alpha[j] ~ dunif(max = a[id_areas[j]], min = b[id_areas[j]]);
-  }
+modelW <- function(seed, d, alpha_init, delta_init, init_b, init_phi, constants, nburnin, thin, niter)
+{
+  #Load Library
+  library(nimbleCarbon)
+  #Define Core Model
+  model <- nimbleCode({
+    #For Each Site
+    for (j in 1:n_sites)
+    {
+      delta[j] ~ dgamma(gamma1, (gamma1-1)/gamma2)
+      alpha[j] ~ dunif(max = a[id_areas[j]], min = b[id_areas[j]]);
+    }
+    
+    #For Each Date
+    for (i in 1:n_dates){
+      theta[i] ~ dunif(min = (alpha[id_sites[i]] - (delta[id_sites[i]]+1)), max = alpha[id_sites[i]]);
+    }
+    
+    #For Each Region
+    for (k in 1:n_areas){
+      a[k] <- phi[k];
+      b[k] ~ T(dunif(b_min, b_max), b_min, a[k]); #In each area, start date of occupation, a_k, must be greater than the end date of occupation, b_k (note: BP dates in the positive direction). Truncating in this way avoids dconstraint.
+    }
+    
+    # ICAR Model prior to capture spatial random effects
+    phi[1:n_areas] ~ dcar_normal(adj[1:L], weights[1:L], num[1:n_areas], tau1, zero_mean=0)
+    
+    #For Each Boundary
+    for (t in 1:n_trans){
+      nabla[t] <- abs(a[edge_id1[t]] - a[edge_id2[t]]) #defines the difference in arrival time across a boundary #edge t: select first area, m, and second area, n
+      nabla_phi[t] <- abs(phi[edge_id1[t]] - phi[edge_id2[t]]) #defines the difference in spatial residues across a boundary
+    }
+    
+    #Priors
+    tau1 ~ dgamma(0.8, 0.1);  #weak prior for ICAR model -- spatial autocorrelation precision parameter
+    
+    # Hyperprior for duration
+    gamma1 ~ dunif(1,20); #Hyperprior for rate
+    gamma2 ~ T(dnorm(mean=200, sd=100), 1, 500) #Hyperprior for mode
+  })
   
-  #For Each Date
-  for (i in 1:n_dates){
-    theta[i] ~ dunif(min = (alpha[id_sites[i]] - (delta[id_sites[i]]+1)), max = alpha[id_sites[i]]);
-  }
+  #Define initial values ----
+  inits <- list(b=init_b,
+                alpha=alpha_init,
+                delta=delta_init,
+                phi=init_phi,
+                tau1=rgamma(1, shape = 0.8, rate = 0.1),
+                gamma1=10,
+                gamma2=200)
   
-  #For Each Region
-  for (k in 1:n_areas){
-    a[k] <- phi[k];
-    b[k] ~ dunif(50, 6500);
-    constraint_uniform[k] ~ dconstraint(b[k]<a[k]); #In each area, start date of occupation, a_k, must be greater than the end date of occupation, b_k (note: BP dates in the positive direction)
-  }
-  
-  # ICAR Model prior to capture spatial random effects
-  phi[1:n_areas] ~ dcar_normal(adj[1:L], weights[1:L], num[1:n_areas], tau1, zero_mean=0)
-  
-  #For Each Boundary
-  for (t in 1:n_trans){
-    #nabla defines the difference in arrival time across a boundary
-    nabla[t] <- abs(a[edge_id1[t]] - a[edge_id2[t]]) #edge t: select first area, m, and second area, n
-    #nabla_phi defines the difference in spatial residues across a boundary
-    nabla_phi[t] <- abs(phi[edge_id1[t]] - phi[edge_id2[t]])
-  }
-  
-  #Priors
-  tau1 ~ dgamma(0.8, 0.1);  #weak prior for ICAR model -- spatial autocorrelation precision parameter
-  
-  # Hyperprior for duration
-  gamma1 ~ dunif(1,20); #Hyperprior for rate
-  gamma2 ~ T(dnorm(mean=200, sd=100), 1, 500) #Hyperprior for mode
-  
-})
+  # Compile and Run model	----
+  #Create model object
+  model <- nimbleModel(model, constants=constants, data=d, inits=inits)
+  cModel <- compileNimble(model)
+  #Configure MCMC with conjugacy where possible
+  conf <- configureMCMC(model, useConjugacy = TRUE, control = list(adaptInterval=5000, adaptFactorExponent=0.1))
+  #Add monitors
+  conf$addMonitors(c('a','b','theta','delta','alpha','phi','nabla'))
+  #Build, compile, and run MCMC
+  MCMC <- buildMCMC(conf)
+  cMCMC <- compileNimble(MCMC)
+  results <- runMCMC(cMCMC, niter = niter, thin = thin, nburnin = nburnin, samplesAsCodaMCMC = T, setSeed = seed)  
+}
 
-#Define initial values ----
-dW <- list(theta=sim_df$cra, 
-           constraint_uniform = rep(1, constants$n_areas))
+#-------------------------------------------------------------------------------
+# MCMC Setup
+ncores  <-  4
+cl <- makeCluster(ncores)
+seeds <- c(12, 34, 56, 78)
+niter  <- 2000000
+nburnin  <- 1000000
+thin  <-100
 
-
-initsW <- list(b=init_b,
-               alpha=alpha_init,
-               delta=delta_init,
-               phi=init_phi,
-               tau1=rgamma(1, shape = 0.8, rate = 0.1),
-               gamma1=10,
-               gamma2=200)
-
-#Run MCMC ----
-out_womble_model <- nimbleMCMC(code = modelW,
-                               constants = constants,
-                               data = dW,
-                               niter = 2000000,
-                               nchains = 4,
-                               thin= 100,
-                               nburnin = 1000000,
-                               monitors = c('a', 'b', 'theta', 'nabla', 'nabla_phi', 'delta', 'alpha', 'phi'), 
-                               inits = initsW,
-                               samplesAsCodaMCMC=TRUE)
+#Hierarchical Womble Model 
+out_womble_model <-  parLapply(cl = cl, 
+                               X = seeds, 
+                               fun = modelW, 
+                               d = dat, 
+                               constants = constants, 
+                               init_b = init_b, 
+                               alpha_init = alpha_init, 
+                               delta_init = delta_init,
+                               init_phi = init_phi,
+                               niter = niter, 
+                               nburnin = nburnin,
+                               thin = thin)
+out_womble_model <- mcmc.list(out_womble_model)
 
 #Diagnostics ----
 rhat_womble_model  <- gelman.diag(out_womble_model, multivariate = FALSE)
@@ -228,5 +259,4 @@ ess_womble_model  <- effectiveSize(out_womble_model)
 save(out_womble_model,
      rhat_womble_model,
      ess_womble_model,
-     file=here('output','Womblemodel_tactical_woa_noerrors.RData')) #'Womblemodel_tactical_withplat_noerrors.RData' ##UNCOMMENT
-
+     file=here('output','Womblemodel_tactical_woa_noerrors.RData')) 

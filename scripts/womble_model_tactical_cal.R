@@ -1,4 +1,4 @@
-#Load Libraries ----
+##Load Libraries ----
 library(here)
 library(coda)
 library(nimbleCarbon)
@@ -10,7 +10,7 @@ library(spdep)
 rm(list = ls())
 `%!in%` <- Negate(`%in%`)
 
-set.seed(123)
+set.seed(1230)
 
 ##ICAR Model with calibrated radiocarbon dates
 
@@ -19,17 +19,17 @@ set.seed(123)
 source(here('src', 'sim_data.R'))
 load(here('data','trig.RData')) #nodes and edges between hex area centroids
 
-## ICAR model tactical simulation with calibrated radiocarbon dates (sim 2) --
-# Generate simulated data set
+# ICAR model tactical simulation with calibrated radiocarbon dates (sim 2) --
+#Generate simulated data set
 sim_dataset <- sim_data(with_calibration = TRUE,
                         seed=10,
                         structure="CAR",
                         k = 0.3,
                         n_sites = 800,
                         n_dates = 3*800,
-                        beta1=-500, 
-                        beta2=0, 
-                        x1_areas=c(1,2,6,10,11,15,19,20,24), 
+                        beta1=-500,
+                        beta2=0,
+                        x1_areas=c(1,2,6,10,11,15,19,20,24,25,29,38),
                         x2_areas=0,
                         a_min=0,
                         a_max=3000,
@@ -37,47 +37,6 @@ sim_dataset <- sim_data(with_calibration = TRUE,
 
 # Save output
 save(sim_dataset, file=here('data','tactical_sim_icar.RData'))
-
-##UNCOMMENT
-## Out Plateau simulations with calibrated radiocarbon dates (sim 3) --
-# Generate simulated data set
-# sim_dataset <- sim_data(with_calibration = TRUE,
-#                         seed=10,
-#                         structure="CAR",
-#                         k = 0.3,
-#                         n_sites = 800,
-#                         n_dates = 3*800,
-#                         beta1=-400,
-#                         beta2=300,
-#                         x1_areas=c(22,26,31,48,52,57,61,65,70),
-#                         x2_areas=c(10,19,25,26,67),
-#                         a_min=0,
-#                         a_max=3000,
-#                         mu1=1500)
-# 
-# # Save output
-# save(sim_dataset, file=here('data','tactical_sim_icar_withoutplat.RData'))
-
-
-
-##UNCOMMENT
-#In Plateau simulations with calibrated radiocarbon dates (sim 5) --
-# Generate simulated data set
-# sim_dataset <- sim_data(with_calibration = TRUE,
-#                         seed=10,
-#                         structure="CAR",
-#                         k = 0.3,
-#                         n_sites = 800,
-#                         n_dates = 3*800,
-#                         beta1=-400,
-#                         beta2=300,
-#                         x1_areas=c(22,26,31,48,52,57,61,65,70),
-#                         x2_areas=c(10,19,25,26,67),
-#                         a_min=1000,
-#                         a_max=4000,
-#                         mu1=2500)
-# # Save output
-# save(sim_dataset, file=here('data','tactical_sim_icar_withinplat.RData'))
 
 #-------------------------------------------------------------------------------
 #Extract values
@@ -89,8 +48,12 @@ constants <- sim_dataset$constants
 sampling_win_proj <- sim_dataset$sampling_win_proj
 hex_area_win_proj <-sim_dataset$hex_area_win_proj
 
+#b_k prior
+b_min <- 50
+b_max <- 3000
+
 #Combine constants
-constants <- c(constants, constants_trig)
+constants <- c(constants, constants_trig, b_min=b_min, b_max=b_max)
 
 #-------------
 # #CHECK: Plot simulated arrival times
@@ -234,10 +197,12 @@ modelW <- function(seed, d, theta_init, alpha_init, delta_init, init_a, init_b, 
     
     #For Each Region
     for (k in 1:n_areas){
-      b[k] ~ dunif(50, 5000); #b[k] ~ dunif(50, 2300)
-      constraint_uniform[k] ~ dconstraint(b[k]<a[k]); #In each area, start date of occupation, a_k, must be greater than the end date of occupation, b_k (note: BP dates in the positive direction)
-      
       a[k] <- phi[k];
+      
+      b[k] ~ dunif(b_min, b_max);
+      constraint_uniform[k] ~ dconstraint(a[k]>b[k]);
+      
+      #b[k] ~ T(dunif(b_min, b_max), b_min, a[k]); #In each area, start date of occupation, a_k, must be greater than the end date of occupation, b_k (note: BP dates in the positive direction). Truncating in this way avoids dconstraint.
     }
     
     # ICAR Model prior to capture spatial random effects
@@ -273,10 +238,14 @@ modelW <- function(seed, d, theta_init, alpha_init, delta_init, init_a, init_b, 
   
   
   # Compile and Run model	----
+  #Create model object
   model <- nimbleModel(model, constants=constants, data=d, inits=inits)
   cModel <- compileNimble(model)
-  conf <- configureMCMC(model, control=list(adaptInterval=20000, adaptFactorExponent=0.1))
-  conf$addMonitors(c('a','b','nabla','nabla_phi','theta','delta','alpha'))
+  #Configure MCMC with conjugacy where possible
+  conf <- configureMCMC(model, useConjugacy = TRUE, control = list(adaptInterval=5000, adaptFactorExponent=0.1))
+  #Add monitors
+  conf$addMonitors(c('a','b','theta','delta','alpha','phi','nabla'))
+  #Build, compile, and run MCMC
   MCMC <- buildMCMC(conf)
   cMCMC <- compileNimble(MCMC)
   results <- runMCMC(cMCMC, niter = niter, thin = thin, nburnin = nburnin, samplesAsCodaMCMC = T, setSeed = seed) 
@@ -324,5 +293,3 @@ save(out_womble_model,
      ess_womble_model, 
      agg_womble_model, 
      file=here('output','Womblemodel_tactical_icar.RData'))
-#'Womblemodel_tactical_withoutplat_errors.RData' ##UNCOMMENT for Out Plateau
-#'Womblemodel_tactical_withplat_errors.RData' ##UNCOMMENT for In Plateau

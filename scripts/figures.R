@@ -233,8 +233,8 @@ axis(3, at = seq(6800, 4600, -50), labels=NA, tck=-0.01) #Minor tick marks
 box()
 #Legend
 post.bar(c(6900,6800,6600,6500,6400,6200,6100), i=77, h=0.9, a=6750)
-text(x=6550, y=78, "95% HPDI", cex=1.5)
-text(x=6300, y=78,"50% HPDI", cex=1.5)
+text(x=6550, y=78, "50% HPDI", cex=1.5)
+text(x=6300, y=78,"95% HPDI", cex=1.5)
 text(x=6450, y=76, "Median Posterior", cex=1.5)
 text(x=6700, y=76, "Simulated value", cex=1.5)
 rect(xleft=6850, xright=6150, ybottom=75, ytop=79, border="darkgrey", col=NA, lwd=2)
@@ -299,7 +299,7 @@ diagnostic_df <- data.frame(median_posterior = paste(med.model.i, "BP"),
                             rhat = round(rhat_womble_model$psrf[1:81,1],2),
                             ESS = round(ess_womble_model[1:81]))
 
-write.csv(diagnostic_df,file=here('output','tables','diagnostics_icar.csv'), row.names = TRUE)
+write.csv(diagnostic_df,file=here('output', 'tables','diagnostics_icar.csv'), row.names = TRUE)
 
 #-------------------------------------------------------------------------------
 ##SUPPLEMENTARY FIGURE -- Map of sites, presence of covariate and sampling window
@@ -479,7 +479,7 @@ Hex_without_sites <- which(rep(1:81) %!in% Hex_with_sites)
 
 pdf(file=here('output','figures','sim2_vs_sim7_posteriors.pdf'), width=10, height=6, pointsize=4)
 par(mar = c(5, 5, 4, 2))   #pad space around plot
-plot(NULL, xlim=c(3900, 600), ylim=c(0.5, 17), xlab=paste('Arrival time (BP),', TeX('$a_k$')), ylab=paste('Area,', TeX('$k$')), cex.lab = 2, axes=F)
+plot(NULL, xlim=c(3250, 500), ylim=c(0.5, 17), xlab=paste('Arrival time (BP),', TeX('$a_k$')), ylab=paste('Area,', TeX('$k$')), cex.lab = 2, axes=F)
 
 iseq.a = seq(1,by=1,length.out=16)
 abline(h=seq(1,by=1,length.out=16), col='lightgrey')
@@ -494,38 +494,38 @@ for (i in c(1,14,11,15,24,31,32,45,50,53,59,61,65,68,79,81))
 }
 
 axis(2, at=iseq.a, labels = paste0(c(1,14,11,15,24,31,32,45,50,53,59,61,65,68,79,81)), las=2, cex.axis=1.7)
-axis(1, at = BCADtoBP(c(-1900, -1700, -1500, -1300, -1100, -900, -700, -500, -300, -100, 100, 300, 500, 700, 900, 1100, 1300)), labels=c('1900BC','1700BC','1500BC','1300BC','1100BC','900BC','700BC','500BC','300BC', '100BC', '100AD', '300AD', '500AD', '700AD', '900AD', '1100AD','1300AD'), tck=-0.01, cex.axis=1.7)
-axis(3, at = seq(3800, 600, -200), labels=paste0(seq(3800, 600, -200),'BP'), tck=-0.01, cex.axis=1.7)
-axis(1, at = BCADtoBP(c(-1800,-1600,-1400,-1200,-1000,-800, -600, -400, -200, 1, 200, 400, 600, 800, 1000, 1200)), labels=NA, tck=-0.01) #Minor tick marks
-axis(3, at = seq(3800, 600, -50), labels=NA, tck=-0.01) #Minor tick marks
+axis(1, at = BCADtoBP(c(-1300, -1100, -900, -700, -500, -300, -100, 100, 300, 500, 700, 900, 1100, 1300)), labels=c('1300BC','1100BC','900BC','700BC','500BC','300BC', '100BC', '100AD', '300AD', '500AD', '700AD', '900AD', '1100AD','1300AD'), tck=-0.01, cex.axis=1.7)
+axis(3, at = seq(3200, 500, -200), labels=paste0(seq(3200, 500, -200),'BP'), tck=-0.01, cex.axis=1.7)
+axis(1, at = BCADtoBP(c(-1200,-1000,-800, -600, -400, -200, 1, 200, 400, 600, 800, 1000, 1200, 1400)), labels=NA, tck=-0.01) #Minor tick marks
+axis(3, at = seq(3200, 500, -50), labels=NA, tck=-0.01) #Minor tick marks
 box()
 #Legend
-post.bar(c(3700,3600,3400,3300,3200,3000,2900), i=5.5, h=0.9, a=3150)
-text(x=3200, y=6, "50% HPDI", cex=2)
-text(x=3550, y=6,"95% HPDI", cex=2)
-text(x=3300, y=5, "Median Posterior", cex=2)
-text(x=3150, y=4.5, "Simulated value", cex=2)
-segments(y0=5.3, y1=4.6, x0=3150, col="darkgrey", lwd=2)
-rect(xleft=3750, xright=2850, ybottom=3, ytop=6.5, border="darkgrey", col=NA, lwd=2.5)
-text(x=3350, y=4, "ICAR Model", col="black", cex=2)
-segments(x0=3650, x1=3600, y0=4, col="dodgerblue", lwd=4)
-text(x=3350, y=3.5, "Phasemodel", col="black", cex=2)
-segments(x0=3650, x1=3600, y0=3.5, col="orchid", lwd=4)
+post.bar(c(3100,3000,2800,2700,2600,2400,2300), i=5.5, h=0.9, a=2550)
+text(x=2650, y=6, "50% HPDI", cex=2)
+text(x=2950, y=6,"95% HPDI", cex=2)
+text(x=2700, y=5, "Median Posterior", cex=2)
+text(x=2550, y=4.5, "Simulated value", cex=2)
+segments(y0=5.3, y1=4.6, x0=2550, col="darkgrey", lwd=2)
+rect(xleft=3150, xright=2300, ybottom=3, ytop=6.5, border="darkgrey", col=NA, lwd=2.5)
+text(x=2750, y=4, "ICAR Model", col="black", cex=2)
+segments(x0=3050, x1=3000, y0=4, col="dodgerblue", lwd=4)
+text(x=2750, y=3.5, "Phasemodel", col="black", cex=2)
+segments(x0=3050, x1=3000, y0=3.5, col="orchid", lwd=4)
 theme(legend.position = "none")
 dev.off()
 
 #-------------------------------------------------------------------------------
 ##SUPPLEMENTARY FIGURE -- Posterior distributions of arrival times
 
-pdf(file=here('output','supplementary_figures','sim2_vs_sim7_posteriors_odd.pdf'), width=10, height=15, pointsize=4)
+pdf(file=here('output','supplementary_figures','sim2_vs_sim7_posteriors_even.pdf'), width=10, height=15, pointsize=4)
 par(mar = c(5, 5, 4, 2))   #pad space around plot
-plot(NULL, xlim=c(3900, 600), ylim=c(1.5, 40.5), xlab=paste('Arrival time (BP),', TeX('$a_k$')), ylab=paste('Area,', TeX('$k$')), cex.lab = 2, axes=F)
+plot(NULL, xlim=c(3250, 500), ylim=c(1.5, 39.5), xlab=paste('Arrival time (BP),', TeX('$a_k$')), ylab=paste('Area,', TeX('$k$')), cex.lab = 2, axes=F)
 
-iseq.a = seq(1,by=1,length.out=41)
-abline(h=seq(1,by=1,length.out=41), col='lightgrey')
+iseq.a = seq(1,by=1,length.out=40)
+abline(h=seq(1,by=1,length.out=40), col='lightgrey')
 
 counter <- 1 #indexing counter
-for (i in seq(1,81,2)) #all odd hex areas #for even hex areas use: seq(2,80,2)
+for (i in seq(2,80,2)) #all even hex areas #for odd hex areas use: seq(1,81,2)
 {
   #Plot bars from sim 2 and sim 7 in area i
   post.bar(tmp.a.sim2[,i], i=iseq.a[counter], h=0.5, a= sim2_a[[i]], barcolours=barcolours1)
@@ -533,24 +533,24 @@ for (i in seq(1,81,2)) #all odd hex areas #for even hex areas use: seq(2,80,2)
   counter <- counter + 1
 }
 
-axis(2, at=iseq.a, labels = paste0(seq(1,81,2)), las=2, cex.axis=1.7) #for even hex areas use: seq(2,80,2)
-axis(1, at = BCADtoBP(c(-1900, -1700, -1500, -1300, -1100, -900, -700, -500, -300, -100, 100, 300, 500, 700, 900, 1100, 1300)), labels=c('1900BC','1700BC','1500BC','1300BC','1100BC','900BC','700BC','500BC','300BC', '100BC', '100AD', '300AD', '500AD', '700AD', '900AD', '1100AD','1300AD'), tck=-0.01, cex.axis=1.7)
-axis(3, at = seq(3800, 600, -200), labels=paste0(seq(3800, 600, -200),'BP'), tck=-0.01, cex.axis=1.7)
-axis(1, at = BCADtoBP(c(-1800,-1600,-1400,-1200,-1000,-800, -600, -400, -200, 1, 200, 400, 600, 800, 1000, 1200)), labels=NA, tck=-0.01) #Minor tick marks
-axis(3, at = seq(3800, 600, -50), labels=NA, tck=-0.01) #Minor tick marks
+axis(2, at=iseq.a, labels = paste0(seq(2,80,2)), las=2, cex.axis=1.7) #for odd hex areas use: seq(1,81,2)
+axis(1, at = BCADtoBP(c(-1300, -1100, -900, -700, -500, -300, -100, 100, 300, 500, 700, 900, 1100, 1300)), labels=c('1300BC','1100BC','900BC','700BC','500BC','300BC', '100BC', '100AD', '300AD', '500AD', '700AD', '900AD', '1100AD','1300AD'), tck=-0.01, cex.axis=1.7)
+axis(3, at = seq(3200, 500, -200), labels=paste0(seq(3200, 500, -200),'BP'), tck=-0.01, cex.axis=1.7)
+axis(1, at = BCADtoBP(c(-1200,-1000,-800, -600, -400, -200, 1, 200, 400, 600, 800, 1000, 1200, 1400)), labels=NA, tck=-0.01) #Minor tick marks
+axis(3, at = seq(3200, 500, -50), labels=NA, tck=-0.01) #Minor tick marks
 box()
 #Legend
-post.bar(c(3700,3600,3400,3300,3200,3000,2900), i=8.5, h=0.9, a=3150)
-text(x=3200, y=9, "50% HPDI", cex=2)
-text(x=3550, y=9,"95% HPDI", cex=2)
-text(x=3300, y=8, "Median Posterior", cex=2)
-text(x=3150, y=7.5, "Simulated value", cex=2)
-segments(y0=8.3, y1=7.6, x0=3150, col="darkgrey", lwd=2)
-rect(xleft=3750, xright=2850, ybottom=6, ytop=9.5, border="darkgrey", col=NA, lwd=2.5)
-text(x=3350, y=7, "ICAR Model", col="black", cex=2)
-segments(x0=3650, x1=3600, y0=7, col="dodgerblue", lwd=4)
-text(x=3350, y=6.5, "Phasemodel", col="black", cex=2)
-segments(x0=3650, x1=3600, y0=6.5, col="orchid", lwd=4)
+post.bar(c(3100,3000,2800,2700,2600,2400,2300), i=10.5, h=0.9, a=2550)
+text(x=2600, y=11, "50% HPDI", cex=2)
+text(x=2950, y=11,"95% HPDI", cex=2)
+text(x=2700, y=10, "Median Posterior", cex=2)
+text(x=2550, y=9.5, "Simulated value", cex=2)
+segments(y0=10.3, y1=9.6, x0=2550, col="darkgrey", lwd=2)
+rect(xleft=3150, xright=2300, ybottom=8, ytop=11.5, border="darkgrey", col=NA, lwd=2.5)
+text(x=2750, y=9, "ICAR Model", col="black", cex=2)
+segments(x0=3050, x1=3000, y0=9, col="dodgerblue", lwd=4)
+text(x=2750, y=8.5, "Phasemodel", col="black", cex=2)
+segments(x0=3050, x1=3000, y0=8.5, col="orchid", lwd=4)
 theme(legend.position = "none")
 dev.off()
 
@@ -570,11 +570,11 @@ sites2_in_areas_summarise <- sites_sim2 %>%
 #  complete(area_id = full_seq(min(area_id):max(area_id), 1), fill = list(n_sites = 0))
 
 #Precision in each area
-ci_95_sim2 = credible_interval(out_womble_model2, 0.95)
-precision2_in_hex <- precision_in_each_area(out_womble_model2, ci_95_sim2)
+ci_50_sim2 = credible_interval(out_womble_model2, 0.50)
+precision2_in_hex <- precision_in_each_area(out_womble_model2, ci_50_sim2)
 
-ci_95_sim7 = credible_interval(out_womble_model7, 0.95)
-precision7_in_hex <- precision_in_each_area(out_womble_model7, ci_95_sim7)
+ci_50_sim7 = credible_interval(out_womble_model7, 0.50)
+precision7_in_hex <- precision_in_each_area(out_womble_model7, ci_50_sim7)
 
 #Precision
 df_precision <- data.frame(n_sites = sites2_in_areas_summarise$n_sites,
@@ -597,7 +597,7 @@ p0 <- ggplot(df_long, aes(x = n_sites, y = precision, color = simulation, shape 
        shape = "Model") +
   scale_shape_manual(values = c("ICAR Model" = 16, "Phasemodel" = 17)) +
   scale_x_continuous(breaks = round(seq(0, 35, by = 5),1)) +
-  scale_y_continuous(breaks = round(seq(0, 4100, by = 500),1), limits =c(0,4200)) +
+  scale_y_continuous(breaks = round(seq(0, 1600, by = 500),1), limits =c(0,1700)) +
   theme_minimal() +
   theme(axis.text = element_text(size=14),
         text = element_text(size=18),
@@ -634,7 +634,7 @@ p1 <- ggplot(df_ICAR_precis_acc, aes(x = n_sites, y = precision, color = accurac
   scale_shape_manual(values = 16) +
   scale_color_manual(values = c("FALSE" = "green", "TRUE"= "blue")) +
   scale_x_continuous(breaks = round(seq(0, 35, by = 5),1)) +
-  scale_y_continuous(breaks = round(seq(0, 4100, by = 500),1), limits =c(0,4200)) +
+  scale_y_continuous(breaks = round(seq(0, 1600, by = 500),1), limits =c(0,1700)) +
   theme_minimal() +
   theme(axis.text = element_text(size=14),
         text = element_text(size=18),
@@ -672,7 +672,7 @@ p2 <- ggplot(df_Phase_precis_acc, aes(x = n_sites, y = precision, color = accura
   scale_shape_manual(values = 17) +
   scale_color_manual(values = c("FALSE" = "green", "TRUE"= "blue")) +
   scale_x_continuous(breaks = round(seq(0, 35, by = 5),1)) +
-  scale_y_continuous(breaks = round(seq(0, 4100, by = 500),1), limits =c(0,4200)) +
+  scale_y_continuous(breaks = round(seq(0, 1600, by = 500),1), limits =c(0,1700)) +
   theme_minimal() +
   theme(axis.text = element_text(size=14),
         text = element_text(size=18),
@@ -976,7 +976,7 @@ sim5_model_precision = precision(sim_a, ci_95)
 plots <- vector("list", 81)
 
 #Output
-pdf(file = here("output", "supplementary_figures", "traceplots_inplateau_cal.pdf"), width = 10, height = 15, onefile=TRUE)
+pdf(file = here('output','supplementary_figures',"traceplots_inplateau_cal.pdf"), width = 10, height = 15, onefile=TRUE)
 par(mfrow = c(11,8), mar = c(2,0,2,0), oma = c(0, 0, 0, 0), mgp = c(1, 0.2, 0))
 for (i in 1:81) {
   param_name <- paste0("a[", i, "]")
@@ -1471,3 +1471,36 @@ p2 <- ggplot(model_metrics, aes(x = cluster_deg, y = precision)) +
 pdf(file=here('output','figures','precision_vs_sampintensity.pdf'), width=10, height=8)
 grid.arrange(p2, ncol=1, padding=0)
 dev.off()
+
+#===============================================================================
+##SUPPLEMENTARY FIGURE: Duration parameter prior predictive check ---
+
+nsim  <- 5000
+gamma1  <- runif(nsim,1,20)
+gamma2  <- rtruncnorm(nsim, mean=200, sd=100, 1, 500)
+delta.mat = matrix(NA, ncol=1000, nrow=nsim)
+
+for (i in 1:nsim) {
+  delta.mat[i,] = dgamma(1:1000, gamma1[i], (gamma1[i]-1)/gamma2[i])
+}
+
+pdf(file=here('output','supplementary_figures','duration_prior_check.pdf'), height=6, width=6)
+plot(NULL,xlab=TeX('$\\delta$'),ylab='Probability Density',xlim=c(1,1000),ylim=c(0,0.02))
+polygon(x=c(1:1000, 1000:1), y=c(apply(delta.mat,2,quantile,prob=0.025), rev(apply(delta.mat,2,quantile,prob=0.975))), border=NA, col=rgb(0.67,0.84,0.9,0.5))
+polygon(x=c(1:1000, 1000:1), y=c(apply(delta.mat,2,quantile,prob=0.25), rev(apply(delta.mat,2,quantile,prob=0.75))), border=NA, col=rgb(0.25,0.41,0.88,0.5))
+legend('topright', legend=c('50% percentile range', '95% percentile range'), fill=c(rgb(0.67,0.84,0.9,0.5), rgb(0.25,0.41,0.88,0.5)))
+dev.off()
+
+# #Gamma Distribution of Simulated Duration Range
+# x <- seq(0, 600, length.out = 1000)  # Range for duration
+# y <- dgamma(x, shape = 5, rate = 0.04)
+# plot(x, y, type = "l", lwd = 2, col = "blue", main = "Gamma Distribution of Simulated Duration", xlab = "Duration", ylab = "Density")
+
+
+##SUPPLEMENTARY FIGURE: Tau prior predictive check ---
+pdf(file=here('output','supplementary_figures','tau_prior_check.pdf'), height=6, width=6)
+x <- seq(0, 100, length.out = 1000)
+y <- dgamma(x, shape = 0.8, rate = 0.1)
+plot(x, y, type = "l", lwd = 2, col = "blue", xlab = "Tau", ylab = "Probability Density")
+dev.off()
+
