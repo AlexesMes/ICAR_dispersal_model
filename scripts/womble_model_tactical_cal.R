@@ -10,7 +10,7 @@ library(spdep)
 rm(list = ls())
 `%!in%` <- Negate(`%in%`)
 
-set.seed(1230)
+set.seed(123)
 
 ##ICAR Model with calibrated radiocarbon dates
 
