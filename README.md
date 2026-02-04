@@ -50,5 +50,9 @@ install.packages("renv")
 renv::restore()
 ```
 
+# Note on reproducibility
+
+Estimates of runtime are based on Ubuntu 24.04.3 running on a Dell Inc. PowerEdge R650xs with 128GiB RAM (DIMM DDR4 Synchronous Registered (Buffered) 3200 MHz (0.3 ns)) and 96 Intel(R) Xeon(R) Gold 6336Y CPU @ 2.40GHz  each with 36864  KB cache.
+
 
 
