@@ -1,4 +1,6 @@
 # ICAR_dispersal_model: An ICAR spatial model to reconstruct regional geographic variations in arrival times
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18493512.svg)](https://doi.org/10.5281/zenodo.18493512))
+
 All data and scripts required to reproduce the analysis for the paper 'An ICAR spatial model to reconstruct regional geographic variations in arrival times' are located within this repository. The repository is organised into four main directories: _src_, _scripts_, _data_, _output_.
 
 # Bayesian Analyses
