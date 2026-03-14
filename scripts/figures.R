@@ -23,6 +23,7 @@ library(diagram)
 library(coda)
 library(graphics)
 library(ggthemes)
+library(ggpattern)
 library(rlist)
 library(patchwork)
 library(tibble)
@@ -201,6 +202,49 @@ modi <- ggplot(data = median_hex_dates_mod.i) +
 #Output
 pdf(file=here('output','figures','sim1_arrivaltime.pdf'), width=10, height=8.5)
 grid.arrange(modi, ncol=1, padding=unit(0,"mm"), clip=FALSE)
+dev.off()
+
+#------------
+##FIGURE 2C -- Map of difference between simulated and median inferred arrival times
+
+#Extract 2.5% and 97.5% quantiles for the inferred model
+ci_lower <- apply(post.a.model.i, 2, quantile, probs = 0.025)
+ci_upper <- apply(post.a.model.i, 2, quantile, probs = 0.975)
+
+#Compute difference between simulated (true_a) and inferred median
+median_diff <- median_hex_dates_mod.i %>%
+  mutate(diffence = constants$true_a - med.model.i,
+         outside_CI = constants$true_a < ci_lower | constants$true_a > ci_upper)
+
+#Plot
+fig2c <- ggplot(data = median_diff) +
+  geom_sf(data = st_buffer(sampling_win_proj, 40000), color = "grey50") + #sampling window with coastal buffer
+  geom_sf_pattern(
+    aes(fill = diffence, pattern = outside_CI),
+    #color = NA,  # no hex borders
+    pattern_color = "grey60",
+    pattern_angle = 60,
+    pattern_density = 0.1,
+    pattern_spacing = 0.02) +
+  scale_fill_gradient2(name = "Arrival time difference",low = "royalblue1",mid = "white",high = "coral2",midpoint = 0,limits = c(-300,300),oob = scales::squish ) +
+  scale_pattern_manual(values = c(`TRUE` = "stripe", `FALSE` = "none")) +
+  guides(fill = guide_colorbar(direction = "horizontal", barwidth = 13),pattern = "none") +
+  theme(
+    panel.background = element_rect(fill = "lightblue", colour = "lightblue"),
+    plot.margin = margin(t = 0.5 * 10, unit = "mm"), #extra space above panel for legend
+    legend.position = c(0.999, 1.05),
+    legend.justification = c(1, 1), 
+    legend.title.position = "left",
+    legend.text = element_text(size=14),
+    legend.title = element_text(size=16, face="bold"),
+    legend.margin = margin(t = 5, r = 30, b = 5, l = 20),  # padding around legend
+    legend.background = element_rect(colour="grey70", size=0.5, linetype="solid"),
+    axis.title = element_blank(),
+    axis.text = element_text(size=15))
+
+#Output
+pdf(file=here('output','figures','sim1_arrivaltime_difference.pdf'), width=10, height=8.5)
+grid.arrange(fig2c, ncol=1, padding=unit(0,"mm"), clip=FALSE)
 dev.off()
 
 #-------------------------------------------------------------------------------
@@ -388,8 +432,52 @@ pdf(file=here('output','figures','sim2_arrivaltime.pdf'), width=10, height=8.5)
 grid.arrange(modi, ncol=1, padding=0)
 dev.off()
 
+
 #------------
-##FIGURE 3C -- Map of Wombling Boundaries (highlighting important boundaries)
+##FIGURE 3C -- Map of difference between simulated and median inferred arrival times
+
+#Extract 2.5% and 97.5% quantiles for the inferred model
+ci_lower <- apply(post.a.model.i, 2, quantile, probs = 0.025)
+ci_upper <- apply(post.a.model.i, 2, quantile, probs = 0.975)
+
+#Compute difference between simulated (true_a) and inferred median
+median_diff <- median_hex_dates_mod.i %>%
+  mutate(diffence = constants$true_a - med.model.i,
+         outside_CI = constants$true_a < ci_lower | constants$true_a > ci_upper)
+
+#Plot
+fig3c <- ggplot(data = median_diff) +
+  geom_sf(data = st_buffer(sampling_win_proj, 40000), color = "grey50") + #sampling window with coastal buffer
+  geom_sf_pattern(
+    aes(fill = diffence, pattern = outside_CI),
+    #color = NA,  # no hex borders
+    pattern_color = "grey60",
+    pattern_angle = 60,
+    pattern_density = 0.1,
+    pattern_spacing = 0.02) +
+  scale_fill_gradient2(name = "Arrival time difference",low = "royalblue1",mid = "white",high = "coral2",midpoint = 0,limits = c(-300,300),oob = scales::squish ) +
+  scale_pattern_manual(values = c(`TRUE` = "stripe", `FALSE` = "none")) +
+  guides(fill = guide_colorbar(direction = "horizontal", barwidth = 13),pattern = "none") +
+  theme(
+    panel.background = element_rect(fill = "lightblue", colour = "lightblue"),
+    plot.margin = margin(t = 0.5 * 10, unit = "mm"), #extra space above panel for legend
+    legend.position = c(0.999, 1.05),
+    legend.justification = c(1, 1), 
+    legend.title.position = "left",
+    legend.text = element_text(size=14),
+    legend.title = element_text(size=16, face="bold"),
+    legend.margin = margin(t = 5, r = 30, b = 5, l = 20),  # padding around legend
+    legend.background = element_rect(colour="grey70", size=0.5, linetype="solid"),
+    axis.title = element_blank(),
+    axis.text = element_text(size=15))
+
+#Output
+pdf(file=here('output','figures','sim2_arrivaltime_difference.pdf'), width=10, height=8.5)
+grid.arrange(fig3c, ncol=1, padding=unit(0,"mm"), clip=FALSE)
+dev.off()
+
+#------------
+##FIGURE 3D -- Map of Wombling Boundaries (highlighting important boundaries)
 
 #With the tactical simulation data from hierarchical wombling model
 post.model.tac_womble_nab  <- out.comb.tac_icar.model[,paste0('nabla[',1:208,']')]  %>% round()
@@ -422,9 +510,8 @@ st_crs(boundaries) <- 3035  # Set CRS for correct Europe projection
 #Plot
 womble_plot <- ggplot(data = median_hex_dates_mod.i) +
   geom_sf(data = st_buffer(sampling_win_proj, 40000), fill = "grey80", color = "grey40") + #sampling window with coastal buffer
-  geom_sf(aes(alpha=0.01), color = "grey60") + scale_alpha(range = c(0, 1)) + #hex grid 
-  geom_sf(data = boundaries, lwd=3, aes(alpha=prob_BLV), color = "red") +
-  geom_sf(data = hex_area_win_proj$area_center, size=2, alpha=1, color = "grey40") + #hex-centers
+  geom_sf(aes(alpha=0.01), color = "grey70") + scale_alpha(range = c(0, 1)) + #hex grid 
+  geom_sf(data = boundaries, lwd=3.5, aes(alpha=prob_BLV), color = "red") +
   scale_alpha_continuous(range = c(0, 1)) +  # Use for continuous alpha values
   ggtitle(paste0('c = 500', ' years')) +
   geom_sf_label(aes(label = area_ID), size=7) +
