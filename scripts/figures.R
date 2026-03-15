@@ -112,6 +112,9 @@ sim_a <- constants$true_a
 sim1_model_accuracy = accuracy(sim_a, ci_95)
 sim1_model_precision = precision(sim_a, ci_95)
 
+#Calculate accuracy and precision in each area 
+sim1_precision_in_hex <- precision_in_each_area(sim_a, ci_95)
+sim1_accuracy_in_hex <- accuracy_in_each_area(sim_a, ci_95)
 #-------------------------------------------------------------------------------
 ##SUPPLEMENTARY Diagnostics: Traceplots and metric table 
 
@@ -139,6 +142,7 @@ diagnostic_df <- data.frame(median_posterior = paste(med.model.i, "BP"),
                             HPDI95_high = paste(round(ci_95[2,]), "BP"),
                             rhat = round(rhat_womble_model$psrf[1:81,1],2),
                             ESS = round(ess_womble_model[1:81]))
+
 
 write.csv(diagnostic_df,file=here('output','tables','diagnostics_woa.csv'), row.names = TRUE)
 
@@ -284,6 +288,46 @@ text(x=6700, y=76, "Simulated value", cex=1.5)
 rect(xleft=6850, xright=6150, ybottom=75, ytop=79, border="darkgrey", col=NA, lwd=2)
 theme(legend.position = "none")
 dev.off()
+
+#-------------------------------------------------------------------------------
+##SUPPLEMENTARY FIGURE: Accuracy and precision in each hexagonal area vs. number of sites
+
+#Number of sites in area
+sites_in_areas_summarise <- sites %>% 
+  group_by(area_id) %>% 
+  summarize(n_sites = n_distinct(site_id), .groups="drop") %>%
+  complete(area_id = full_seq(1:max(area_id), 1), fill = list(n_sites = 0))
+
+#Accuracy and Precision in each hex
+df_woa_precis_acc <- data.frame(n_sites = sites_in_areas_summarise$n_sites,
+                                precision = sim1_precision_in_hex,
+                                accuracy = sim1_accuracy_in_hex)
+
+p1 <- ggplot(df_woa_precis_acc, aes(x = n_sites, y = precision, color = accuracy)) + 
+  geom_point(size = 3.5) +
+  labs(x = "Number of Sites",
+       y = "Precision (in years)",
+       color = "Accuracy (95% HPDI)") +
+  scale_shape_manual(values = 16) +
+  scale_color_manual(values = c("FALSE" = "firebrick2", "TRUE"= "blue")) +
+  scale_x_continuous(breaks = round(seq(0, 35, by = 5),1)) +
+  scale_y_continuous(breaks = round(seq(0, 1000, by = 200),1), limits =c(0,1000)) +
+  theme_minimal() +
+  theme(axis.text = element_text(size=14),
+        text = element_text(size=18),
+        legend.position = c(0.96, 0.96),
+        legend.justification = c(1, 1), 
+        legend.title.position = "top",
+        legend.text = element_text(size=14),
+        legend.title = element_text(size=16, face="bold"),
+        legend.margin = margin(t = 5, r = 30, b = 5, l = 20), 
+        legend.background = element_rect(colour="grey70", size=0.5, linetype="solid"),
+        panel.border = element_rect(colour = "black", fill=NA, linewidth=2))
+
+pdf(file=here('output','supplementary_figures','precision_vs_nsites_sim1_woa_acc.pdf'), width=10, height=8)
+grid.arrange(p1, ncol=1, padding=0)
+dev.off()
+
 
 #===============================================================================
 #####PAPER SECTION: Comparing the ICAR model to a Phase model
@@ -460,7 +504,7 @@ fig3c <- ggplot(data = median_diff) +
   guides(fill = guide_colorbar(direction = "horizontal", barwidth = 13),pattern = "none") +
   theme(
     panel.background = element_rect(fill = "lightblue", colour = "lightblue"),
-    plot.margin = margin(t = 0.5 * 10, unit = "mm"), #extra space above panel for legend
+    plot.margin = margin(t = 0.5 * 15, unit = "mm"), #extra space above panel for legend
     legend.position = c(0.999, 1.05),
     legend.justification = c(1, 1), 
     legend.title.position = "left",
@@ -510,16 +554,23 @@ st_crs(boundaries) <- 3035  # Set CRS for correct Europe projection
 #Plot
 womble_plot <- ggplot(data = median_hex_dates_mod.i) +
   geom_sf(data = st_buffer(sampling_win_proj, 40000), fill = "grey80", color = "grey40") + #sampling window with coastal buffer
-  geom_sf(aes(alpha=0.01), color = "grey70") + scale_alpha(range = c(0, 1)) + #hex grid 
+  geom_sf(aes(alpha=0.01), color = "grey70") + #hex grid 
   geom_sf(data = boundaries, lwd=3.5, aes(alpha=prob_BLV), color = "red") +
-  scale_alpha_continuous(range = c(0, 1)) +  # Use for continuous alpha values
-  ggtitle(paste0('c = 500', ' years')) +
+  scale_alpha_continuous(name = "Boundary Probability", range = c(0, 1), guide = guide_legend(direction = "horizontal")) +  # Use for continuous alpha values
+  ggtitle(expression(zeta == 500 ~ years)) +
   geom_sf_label(aes(label = area_ID), size=7) +
   theme(panel.background = element_rect(fill = "lightblue",
                                         colour = "lightblue",
                                         size = 0.5,
                                         linetype = "solid"),
-        legend.position = "none",
+        plot.margin = margin(t = 0.5 * 5, unit = "mm"), #extra space above panel for legend
+        legend.position = c(0.999, 1.05),
+        legend.justification = c(1, 1), 
+        legend.title.position = "left",
+        legend.text = element_text(size=14),
+        legend.title = element_text(size=16, face="bold"),
+        legend.margin = margin(t = 5, r = 30, b = 5, l = 20),  # padding around legend
+        legend.background = element_rect(colour="grey70", size=0.5, linetype="solid"),
         axis.text = element_text(size=15),
         axis.title = element_blank(),
         title = element_text(size=16, face="bold"))
@@ -657,11 +708,11 @@ sites2_in_areas_summarise <- sites_sim2 %>%
 #  complete(area_id = full_seq(min(area_id):max(area_id), 1), fill = list(n_sites = 0))
 
 #Precision in each area
-ci_50_sim2 = credible_interval(out_womble_model2, 0.50)
-precision2_in_hex <- precision_in_each_area(out_womble_model2, ci_50_sim2)
+ci_95_sim2 = credible_interval(out_womble_model2, 0.95)
+precision2_in_hex <- precision_in_each_area(out_womble_model2, ci_95_sim2)
 
-ci_50_sim7 = credible_interval(out_womble_model7, 0.50)
-precision7_in_hex <- precision_in_each_area(out_womble_model7, ci_50_sim7)
+ci_95_sim7 = credible_interval(out_womble_model7, 0.95)
+precision7_in_hex <- precision_in_each_area(out_womble_model7, ci_95_sim7)
 
 #Precision
 df_precision <- data.frame(n_sites = sites2_in_areas_summarise$n_sites,
@@ -684,7 +735,7 @@ p0 <- ggplot(df_long, aes(x = n_sites, y = precision, color = simulation, shape 
        shape = "Model") +
   scale_shape_manual(values = c("ICAR Model" = 16, "Phasemodel" = 17)) +
   scale_x_continuous(breaks = round(seq(0, 35, by = 5),1)) +
-  scale_y_continuous(breaks = round(seq(0, 1600, by = 500),1), limits =c(0,1700)) +
+  scale_y_continuous(breaks = round(seq(0, 3000, by = 500),1), limits =c(0,3000)) +
   theme_minimal() +
   theme(axis.text = element_text(size=14),
         text = element_text(size=18),
@@ -706,22 +757,21 @@ dev.off()
 ##SUPPLEMENTARY FIGURE -- (A) ICAR Precision and accuracy vs. number of sites
 
 #Accuracy (hit/miss) in each area
-ci_50_sim2 = credible_interval(out_womble_model2, 0.50)
-accuracy2_in_hex <- accuracy_in_each_area(sim2_a, ci_50_sim2)
+accuracy2_in_hex <- accuracy_in_each_area(sim2_a, ci_95_sim2)
 
 df_ICAR_precis_acc <- data.frame(n_sites = sites2_in_areas_summarise$n_sites,
                            precision = precision2_in_hex,
                            accuracy = accuracy2_in_hex)
 
 p1 <- ggplot(df_ICAR_precis_acc, aes(x = n_sites, y = precision, color = accuracy)) + 
-  geom_point(size = 3) +
+  geom_point(size = 3.5) +
   labs(x = "Number of Sites",
     y = "Precision (in years)",
-    color = "Accuracy (50% HPDI)") +
+    color = "Accuracy (95% HPDI)") +
   scale_shape_manual(values = 16) +
-  scale_color_manual(values = c("FALSE" = "green", "TRUE"= "blue")) +
+  scale_color_manual(values = c("FALSE" = "firebrick2", "TRUE"= "blue")) +
   scale_x_continuous(breaks = round(seq(0, 35, by = 5),1)) +
-  scale_y_continuous(breaks = round(seq(0, 1600, by = 500),1), limits =c(0,1700)) +
+  scale_y_continuous(breaks = round(seq(0, 3000, by = 500),1), limits =c(0,3000)) +
   theme_minimal() +
   theme(axis.text = element_text(size=14),
         text = element_text(size=18),
@@ -740,26 +790,23 @@ dev.off()
 
 #---------------
 ##SUPPLEMENTARY FIGURE -- (B) Phasemodel Precision and accuracy vs. number of sites
-#Accuracy (hit/miss) in each area
-ci_50_sim2 = credible_interval(out_womble_model2, 0.50)
-accuracy2_in_hex <- accuracy_in_each_area(sim2_a, ci_50_sim2)
 
-ci_50_sim7 = credible_interval(out_womble_model7, 0.50)
-accuracy7_in_hex <- accuracy_in_each_area(sim7_a, ci_50_sim7)
+#Accuracy (hit/miss) in each area
+accuracy7_in_hex <- accuracy_in_each_area(sim7_a, ci_95_sim7)
 
 df_Phase_precis_acc <- data.frame(n_sites = sites2_in_areas_summarise$n_sites,
                                  precision = precision7_in_hex,
                                  accuracy = accuracy7_in_hex)
 
 p2 <- ggplot(df_Phase_precis_acc, aes(x = n_sites, y = precision, color = accuracy)) + 
-  geom_point(size = 3) +
+  geom_point(size = 3.5) +
   labs(x = "Number of Sites",
     y = "Precision (in years)",
-    color = "Accuracy (50% HPDI)") +
+    color = "Accuracy (95% HPDI)") +
   scale_shape_manual(values = 17) +
-  scale_color_manual(values = c("FALSE" = "green", "TRUE"= "blue")) +
+  scale_color_manual(values = c("FALSE" = "firebrick2", "TRUE"= "blue")) +
   scale_x_continuous(breaks = round(seq(0, 35, by = 5),1)) +
-  scale_y_continuous(breaks = round(seq(0, 1600, by = 500),1), limits =c(0,1700)) +
+  scale_y_continuous(breaks = round(seq(0, 3000, by = 500),1), limits =c(0,3000)) +
   theme_minimal() +
   theme(axis.text = element_text(size=14),
         text = element_text(size=18),
