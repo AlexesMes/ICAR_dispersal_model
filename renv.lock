@@ -449,6 +449,32 @@
       "Author": "Angelo Canty [aut] (author of original code for S), Brian Ripley [aut, trl] (conversion to R, maintainer 1999--2022, author of parallel support), Alessandra R. Brazzale [ctb, cre] (minor bug fixes)",
       "Repository": "CRAN"
     },
+    "cachem": {
+      "Package": "cachem",
+      "Version": "1.1.0",
+      "Source": "Repository",
+      "Title": "Cache R Objects with Automatic Pruning",
+      "Description": "Key-value stores with automatic pruning. Caches can limit either their total size or the age of the oldest object (or both), automatically pruning objects to maintain the constraints.",
+      "Authors@R": "c( person(\"Winston\", \"Chang\", , \"winston@posit.co\", c(\"aut\", \"cre\")), person(family = \"Posit Software, PBC\", role = c(\"cph\", \"fnd\")))",
+      "License": "MIT + file LICENSE",
+      "Encoding": "UTF-8",
+      "ByteCompile": "true",
+      "URL": "https://cachem.r-lib.org/, https://github.com/r-lib/cachem",
+      "Imports": [
+        "rlang",
+        "fastmap (>= 1.2.0)"
+      ],
+      "Suggests": [
+        "testthat"
+      ],
+      "RoxygenNote": "7.2.3",
+      "Config/Needs/routine": "lobstr",
+      "Config/Needs/website": "pkgdown",
+      "NeedsCompilation": "yes",
+      "Author": "Winston Chang [aut, cre], Posit Software, PBC [cph, fnd]",
+      "Maintainer": "Winston Chang <winston@posit.co>",
+      "Repository": "CRAN"
+    },
     "cascsim": {
       "Package": "cascsim",
       "Version": "0.4",
@@ -1183,6 +1209,26 @@
       "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@posit.co>",
       "Repository": "CRAN"
     },
+    "fastmap": {
+      "Package": "fastmap",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Title": "Fast Data Structures",
+      "Authors@R": "c( person(\"Winston\", \"Chang\", email = \"winston@posit.co\", role = c(\"aut\", \"cre\")), person(given = \"Posit Software, PBC\", role = c(\"cph\", \"fnd\")), person(given = \"Tessil\", role = \"cph\", comment = \"hopscotch_map library\") )",
+      "Description": "Fast implementation of data structures, including a key-value store, stack, and queue. Environments are commonly used as key-value stores in R, but every time a new key is used, it is added to R's global symbol table, causing a small amount of memory leakage. This can be problematic in cases where many different keys are used. Fastmap avoids this memory leak issue by implementing the map using data structures in C++.",
+      "License": "MIT + file LICENSE",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.2.3",
+      "Suggests": [
+        "testthat (>= 2.1.1)"
+      ],
+      "URL": "https://r-lib.github.io/fastmap/, https://github.com/r-lib/fastmap",
+      "BugReports": "https://github.com/r-lib/fastmap/issues",
+      "NeedsCompilation": "yes",
+      "Author": "Winston Chang [aut, cre], Posit Software, PBC [cph, fnd], Tessil [cph] (hopscotch_map library)",
+      "Maintainer": "Winston Chang <winston@posit.co>",
+      "Repository": "CRAN"
+    },
     "fitdistrplus": {
       "Package": "fitdistrplus",
       "Version": "1.2-6",
@@ -1342,6 +1388,57 @@
       "Collate": "'aaa.R' 'shape.R' 'arc_bar.R' 'arc.R' 'autodensity.R' 'autohistogram.R' 'autopoint.R' 'bezier.R' 'bspline.R' 'bspline_closed.R' 'circle.R' 'concaveman.R' 'cpp11.R' 'diagonal.R' 'diagonal_wide.R' 'ellipse.R' 'errorbar.R' 'facet_grid_paginate.R' 'facet_matrix.R' 'facet_row.R' 'facet_stereo.R' 'facet_wrap_paginate.R' 'facet_zoom.R' 'ggforce-package.R' 'ggproto-classes.R' 'interpolate.R' 'labeller.R' 'link.R' 'mark_circle.R' 'mark_ellipse.R' 'mark_hull.R' 'mark_label.R' 'mark_rect.R' 'parallel_sets.R' 'position-jitternormal.R' 'position_auto.R' 'position_floatstack.R' 'regon.R' 'scale-depth.R' 'scale-unit.R' 'sina.R' 'spiro.R' 'themes.R' 'trans.R' 'trans_linear.R' 'utilities.R' 'voronoi.R' 'zzz.R'",
       "NeedsCompilation": "yes",
       "Author": "Thomas Lin Pedersen [cre, aut] (ORCID: <https://orcid.org/0000-0002-5147-4711>), RStudio [cph]",
+      "Repository": "CRAN"
+    },
+    "ggpattern": {
+      "Package": "ggpattern",
+      "Version": "1.3.1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "'ggplot2' Pattern Geoms",
+      "Authors@R": "c(person(\"Mike\", \"FC\", role = \"aut\"), person(\"Trevor L.\", \"Davis\", role = c(\"aut\", \"cre\"), email = \"trevor.l.davis@gmail.com\", comment = c(ORCID = \"0000-0001-6341-4639\")), person(\"ggplot2 authors\", role = \"aut\"))",
+      "Description": "Provides 'ggplot2' geoms filled with various patterns.  Includes a patterned version of every 'ggplot2' geom that has a region that can be filled with a pattern.  Provides a suite of 'ggplot2' aesthetics and scales for controlling pattern appearances.  Supports over a dozen builtin patterns (every pattern implemented by 'gridpattern') as well as allowing custom user-defined patterns.",
+      "URL": "https://github.com/trevorld/ggpattern, https://trevorldavis.com/R/ggpattern/",
+      "BugReports": "https://github.com/trevorld/ggpattern/issues",
+      "License": "MIT + file LICENSE",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.3",
+      "Depends": [
+        "R (>= 4.1)"
+      ],
+      "Imports": [
+        "cli",
+        "ggplot2 (>= 4.0.2)",
+        "glue",
+        "grid",
+        "gridpattern (>= 1.2.2)",
+        "lifecycle",
+        "rlang (>= 1.1.3)",
+        "scales",
+        "vctrs"
+      ],
+      "Suggests": [
+        "ambient",
+        "dplyr",
+        "gganimate",
+        "knitr (>= 1.47)",
+        "magick",
+        "mapproj",
+        "maps",
+        "png",
+        "ragg (>= 1.2.0)",
+        "readr",
+        "rmarkdown (>= 2.27)",
+        "sf (>= 0.7-3)",
+        "svglite (>= 2.1.3)",
+        "testthat (>= 2.1.0)",
+        "vdiffr (>= 1.0.6)"
+      ],
+      "VignetteBuilder": "knitr, ragg, rmarkdown",
+      "Collate": "'a-geom-docs.R' 'aaa-ggplot2-compat-plyr.R' 'aaa-ggplot2-ggplot-global.R' 'aaa-ggplot2-performance.R' 'aaa-ggplot2-scale-manual.R' 'aaa-ggplot2-utilities-grid.R' 'aaa-ggplot2-utilities.R' 'geom-.R' 'geom-rect.R' 'geom-bar.R' 'geom-tile.R' 'geom-bin2d.R' 'geom-boxplot.R' 'geom-col.R' 'geom-crossbar.R' 'geom-ribbon.R' 'geom-density.R' 'geom-histogram.R' 'geom-polygon.R' 'geom-map.R' 'geom-sf.R' 'geom-violin.R' 'ggpattern-defunct.R' 'ggpattern-deprecated.R' 'ggpattern-package.R' 'pattern.R' 'polygon_df.R' 'scale-pattern-alpha.R' 'scale-pattern-auto.R' 'scale-pattern-brewer.R' 'scale-pattern-colour.R' 'scale-pattern-gradient.R' 'scale-pattern-grey.R' 'scale-pattern-hue.R' 'scale-pattern-linetype.R' 'scale-pattern-shape.R' 'scale-pattern-size.R' 'scale-pattern-viridis.R' 'scale-pattern.R' 'zxx.R' 'zzz.R'",
+      "NeedsCompilation": "no",
+      "Author": "Mike FC [aut], Trevor L. Davis [aut, cre] (ORCID: <https://orcid.org/0000-0001-6341-4639>), ggplot2 authors [aut]",
+      "Maintainer": "Trevor L. Davis <trevor.l.davis@gmail.com>",
       "Repository": "CRAN"
     },
     "ggplot2": {
@@ -1630,6 +1727,52 @@
       "Maintainer": "Baptiste Auguie <baptiste.auguie@gmail.com>",
       "Repository": "CRAN",
       "Encoding": "UTF-8"
+    },
+    "gridpattern": {
+      "Package": "gridpattern",
+      "Version": "1.3.1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "'grid' Pattern Grobs",
+      "Authors@R": "c( person(\"Trevor L.\", \"Davis\", role=c(\"aut\", \"cre\"), email=\"trevor.l.davis@gmail.com\", comment = c(ORCID = \"0000-0001-6341-4639\")), person(\"Mike\", \"FC\", role = \"aut\", comment = \"Code/docs adapted from ggpattern\"), person(\"ggplot2 authors\", role = \"ctb\", comment = \"some utility functions copied from ggplot2\"))",
+      "Description": "Provides 'grid' grobs that fill in a user-defined area with various patterns.  Includes enhanced versions of the geometric and image-based patterns originally contained in the 'ggpattern' package as well as original 'pch', 'polygon_tiling', 'regular_polygon', 'rose', 'text', 'wave', and 'weave' patterns plus support for custom user-defined patterns.",
+      "URL": "https://trevorldavis.com/R/gridpattern/, https://github.com/trevorld/gridpattern",
+      "BugReports": "https://github.com/trevorld/gridpattern/issues",
+      "License": "MIT + file LICENSE",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.1",
+      "Depends": [
+        "R (>= 3.4.0)"
+      ],
+      "Imports": [
+        "glue",
+        "grDevices",
+        "grid",
+        "memoise",
+        "png",
+        "rlang",
+        "sf",
+        "utils"
+      ],
+      "Suggests": [
+        "ambient",
+        "aRtsy",
+        "ggplot2 (>= 3.5.0)",
+        "gtable",
+        "knitr",
+        "magick (>= 2.7.4)",
+        "ragg (>= 1.2.0)",
+        "rmarkdown",
+        "scales",
+        "svglite (>= 2.1.0)",
+        "testthat",
+        "vdiffr (>= 1.0.6)"
+      ],
+      "VignetteBuilder": "knitr, rmarkdown",
+      "NeedsCompilation": "no",
+      "Author": "Trevor L. Davis [aut, cre] (<https://orcid.org/0000-0001-6341-4639>), Mike FC [aut] (Code/docs adapted from ggpattern), ggplot2 authors [ctb] (some utility functions copied from ggplot2)",
+      "Maintainer": "Trevor L. Davis <trevor.l.davis@gmail.com>",
+      "Repository": "CRAN"
     },
     "gsl": {
       "Package": "gsl",
@@ -2191,6 +2334,36 @@
       "Maintainer": "Lionel Henry <lionel@posit.co>",
       "Repository": "CRAN"
     },
+    "memoise": {
+      "Package": "memoise",
+      "Version": "2.0.1",
+      "Source": "Repository",
+      "Title": "'Memoisation' of Functions",
+      "Authors@R": "c(person(given = \"Hadley\", family = \"Wickham\", role = \"aut\", email = \"hadley@rstudio.com\"), person(given = \"Jim\", family = \"Hester\", role = \"aut\"), person(given = \"Winston\", family = \"Chang\", role = c(\"aut\", \"cre\"), email = \"winston@rstudio.com\"), person(given = \"Kirill\", family = \"Müller\", role = \"aut\", email = \"krlmlr+r@mailbox.org\"), person(given = \"Daniel\", family = \"Cook\", role = \"aut\", email = \"danielecook@gmail.com\"), person(given = \"Mark\", family = \"Edmondson\", role = \"ctb\", email = \"r@sunholo.com\"))",
+      "Description": "Cache the results of a function so that when you call it again with the same arguments it returns the previously computed value.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://memoise.r-lib.org, https://github.com/r-lib/memoise",
+      "BugReports": "https://github.com/r-lib/memoise/issues",
+      "Imports": [
+        "rlang (>= 0.4.10)",
+        "cachem"
+      ],
+      "Suggests": [
+        "digest",
+        "aws.s3",
+        "covr",
+        "googleAuthR",
+        "googleCloudStorageR",
+        "httr",
+        "testthat"
+      ],
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.1.2",
+      "NeedsCompilation": "no",
+      "Author": "Hadley Wickham [aut], Jim Hester [aut], Winston Chang [aut, cre], Kirill Müller [aut], Daniel Cook [aut], Mark Edmondson [ctb]",
+      "Maintainer": "Winston Chang <winston@rstudio.com>",
+      "Repository": "CRAN"
+    },
     "mgcv": {
       "Package": "mgcv",
       "Version": "1.9-3",
@@ -2599,6 +2772,24 @@
       "Encoding": "UTF-8",
       "NeedsCompilation": "no",
       "Repository": "CRAN"
+    },
+    "png": {
+      "Package": "png",
+      "Version": "0.1-8",
+      "Source": "Repository",
+      "Title": "Read and write PNG images",
+      "Author": "Simon Urbanek <Simon.Urbanek@r-project.org>",
+      "Maintainer": "Simon Urbanek <Simon.Urbanek@r-project.org>",
+      "Depends": [
+        "R (>= 2.9.0)"
+      ],
+      "Description": "This package provides an easy and simple way to read, write and display bitmap images stored in the PNG format. It can read and write both files and in-memory raw vectors.",
+      "License": "GPL-2 | GPL-3",
+      "SystemRequirements": "libpng",
+      "URL": "http://www.rforge.net/png/",
+      "NeedsCompilation": "yes",
+      "Repository": "CRAN",
+      "Encoding": "UTF-8"
     },
     "polyclip": {
       "Package": "polyclip",
