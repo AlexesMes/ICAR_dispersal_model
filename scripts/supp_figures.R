@@ -262,6 +262,7 @@ site_map <- ggplot(data = hex_area_win_proj) +
   geom_sf_label(aes(label = area_ID), size=7) +                     # area labels
   theme(
     panel.background = element_rect(fill = "lightblue", colour = "lightblue"),
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.5),
     legend.title = element_blank(),
     legend.position = "top",
     legend.text=element_text(size=18),

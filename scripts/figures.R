@@ -73,6 +73,7 @@ y <- ggplot() +
                                             colour = "lightblue",
                                             size = 0.5,
                                             linetype = "solid"),
+            panel.grid.major = element_line(color = "grey85", linewidth = 0.5),
             legend.position = "none",
             axis.text = element_text(size=13),
             text = element_text(size=17))
@@ -127,6 +128,7 @@ site_map <- ggplot(data = hex_area_win_proj) +
     geom_sf(data = sites_sf, size = 3, alpha = 0.8) +  # sites
     theme(
       panel.background = element_rect(fill = "lightblue", colour = "lightblue"),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.5),
       plot.margin = margin(t = 0.5 * 10, unit = "mm"), #extra space above panel for legend
       legend.position = c(0.999, 1.05),
       legend.justification = c(1, 1), 
@@ -162,6 +164,7 @@ modi <- ggplot(data = median_hex_dates_mod.i) +
   guides(fill = guide_colorbar(direction = "horizontal", barwidth = 13)) + #horizontal legend
   theme(
     panel.background = element_rect(fill = "lightblue", colour = "lightblue"),
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.5),
     plot.margin = margin(t = 0.5 * 10, unit = "mm"), #extra space above panel for legend
     legend.position = c(0.999, 1.05),
     legend.justification = c(1, 1), 
@@ -205,6 +208,7 @@ fig2c <- ggplot(data = median_diff) +
   guides(fill = guide_colorbar(direction = "horizontal", barwidth = 13),pattern = "none") +
   theme(
     panel.background = element_rect(fill = "lightblue", colour = "lightblue"),
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.5),
     plot.margin = margin(t = 0.5 * 10, unit = "mm"), #extra space above panel for legend
     legend.position = c(0.999, 1.05),
     legend.justification = c(1, 1), 
@@ -262,6 +266,7 @@ site_map <- ggplot(data = hex_area_win_proj) +
   geom_sf(data = sites_sf, size = 3, alpha = 0.8) +  # sites
   theme(
     panel.background = element_rect(fill = "lightblue", colour = "lightblue"),
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.5),
     plot.margin = margin(t = 0.5 * 10, unit = "mm"), #extra space above panel for legend
     legend.position = c(0.999, 1.05),
     legend.justification = c(1, 1), 
@@ -298,6 +303,7 @@ modi <- ggplot(data = median_hex_dates_mod.i) +
   guides(fill = guide_colorbar(direction = "horizontal", barwidth = 10)) + #horizontal legend
   theme(
     panel.background = element_rect(fill = "lightblue", colour = "lightblue"),
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.5),
     plot.margin = margin(t = 0.5 * 10, unit = "mm"), #extra space above panel for legend
     legend.position = c(0.999, 1.05),
     legend.justification = c(1, 1), 
@@ -342,6 +348,7 @@ fig3c <- ggplot(data = median_diff) +
   guides(fill = guide_colorbar(direction = "horizontal", barwidth = 13),pattern = "none") +
   theme(
     panel.background = element_rect(fill = "lightblue", colour = "lightblue"),
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.5),
     plot.margin = margin(t = 0.5 * 15, unit = "mm"), #extra space above panel for legend
     legend.position = c(0.999, 1.05),
     legend.justification = c(1, 1), 
@@ -401,6 +408,7 @@ womble_plot <- ggplot(data = median_hex_dates_mod.i) +
                                         colour = "lightblue",
                                         size = 0.5,
                                         linetype = "solid"),
+        panel.grid.major = element_line(color = "grey85", linewidth = 0.5),
         plot.margin = margin(t = 0.5 * 5, unit = "mm"), #extra space above panel for legend
         legend.position = c(0.999, 1.05),
         legend.justification = c(1, 1), 
@@ -669,6 +677,7 @@ p <- ggplot(data = hex_area_win_proj) +
   labs(title=paste0("c = ", c)) +
   theme(
     panel.background = element_rect(fill = "lightblue", colour = "lightblue"),
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.5),
     legend.position = "bottom",
     axis.title = element_blank(),
     axis.text = element_text(size=13))
